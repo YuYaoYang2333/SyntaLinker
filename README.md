@@ -21,3 +21,15 @@ conda install pytorch=1.3.1 torchvision -c pytorch
 ```
 
 
+## Pre-processing 
+In the experiments we obtain the 
+
+In the experiments we use an open-source datasets (and train/valid/test splits).
+
+The tokenized datasets can be found on the `data/` folder. 
+
+For Input file generation, we the [preprocess.sh]script:
+
+We use a shared vocabulary. The `vocab_size` and `seq_length` are chosen to include the whole datasets.
+
+

@@ -1,4 +1,4 @@
-name: base
+name: DeepLinker
 channels:
   - rdkit
   - defaults
@@ -328,4 +328,3 @@ dependencies:
     - torchtext==0.4.0
     - tqdm==4.30.0
     - wrapt==1.11.2
-prefix: /mnt/home/yangyuyao/anaconda3

@@ -10,7 +10,7 @@ Create a new conda environment:
 
 ```bash
 conda env create -f environment.yml
-conda activate DeepLinker
+conda activate SyntaLinker
 ```
 
 The code was tested for pytorch 1.3.1, to install it go on [Pytorch](https://pytorch.org/get-started/locally/).

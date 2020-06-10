@@ -1,4 +1,4 @@
-# DeepLinker (A deep generative model for fragment linking)
+# SyntaLinker (A deep generative model for fragment linking)
 
 This is the code for the "A novel method for fragment linking based on deep generative model" paper found on [ChemRxiv](https://ChemRxiv.org/).
 

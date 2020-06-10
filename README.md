@@ -1,6 +1,6 @@
-# SyntaLinker (A deep generative model for fragment linking)
+# SyntaLinker (Automatic Fragment Linking with Deep Conditional Transformer Neural Networks)
 
-This is the code for the "A novel method for fragment linking based on deep generative model" paper found on [ChemRxiv](https://ChemRxiv.org/).
+This is the code for the "SyntaLinker: Automatic Fragment Linking with Deep Conditional Transformer Neural Networks" paper found on [ChemRxiv](https://ChemRxiv.org/).
 
 To implement our models we were based on [OpenNMT-py (v0.4.1)](http://opennmt.net/OpenNMT-py/).
 

@@ -17,7 +17,7 @@ conda activate SyntaLinker
 
 The tokenized datasets can be found on the `data/` folder. 
 
-For Input file generation, we the [preprocess.sh]script:
+For Input file generation, we the [preprocess.sh](https://github.com/YuYaoYang2333/SyntaLinker/edit/master/preprocess.sh) script:
 
 We use a shared vocabulary. The `vocab_size` and `seq_length` are chosen to include the whole datasets.
 
@@ -26,20 +26,20 @@ We use a shared vocabulary. The `vocab_size` and `seq_length` are chosen to incl
 
 The data has already been preprocessed for training the SyntaLinker
 
-Model training can be started by running the [training.sh]script
+Model training can be started by running the [training.sh](https://github.com/YuYaoYang2333/SyntaLinker/edit/master/training.sh) script
 
-To achieve the best results with single models, we average the last 10 checkpoints by running [average_models.sh].
+To achieve the best results with single models, we average the last 10 checkpoints by running [average_models.sh](https://github.com/YuYaoYang2333/SyntaLinker/edit/master/average_models.sh) script.
 
 
 ## Testing (beam search)
 
 To generate the predictions use the `translate.py` script:
 
-Model testing of beam search can be started by running the [testing_beam_search.sh]script.
+Model testing of beam search can be started by running the [testing_beam_search.sh](https://github.com/YuYaoYang2333/SyntaLinker/edit/master/testing_beam_search.sh) script.
 
 # Metrics
 
-Run the the [recovery.sh]script to get the top-10 recovery.
+Run the the [recovery.sh](https://github.com/YuYaoYang2333/SyntaLinker/edit/master/recovery.sh) script to get the top-10 recovery.
 The other metrics, such as RMSD, 3D smiliarity in case study can be found in `Utils/` folder.
 
 ## Citation

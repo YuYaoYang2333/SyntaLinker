@@ -8,14 +8,17 @@ def average_models(model_files):
     opt = None
     avg_model = None
     avg_generator = None
+    optim = None
 
     for i, model_file in enumerate(model_files):
         m = torch.load(model_file)
         model_weights = m['model']
         generator_weights = m['generator']
-
+        
         if i == 0:
             optim = m['optim']
+
+        if i == 0:
             vocab, opt = m['vocab'], m['opt']
             avg_model = model_weights
             avg_generator = generator_weights

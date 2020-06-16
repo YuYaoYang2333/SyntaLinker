@@ -99,7 +99,7 @@ def spliting(mmps):
 def write_src_tgt(mmps, name, dir):
     src_file = dir + "src" + "-" + name
     tgt_file = dir + "tgt" + "-" + name
-    src = [mmp.split(".")[0] + " " + " ".join(".".join(mmp.split(".")[2:4])) for mmp in mmps]
+    src = [mmp.split(".")[0] + " " + " ".join(".".join((mmp.split(">")[0]).split(".")[2:4]) for mmp in mmps]
     tgt = [" ".join(mmp.split(">")[1]) for mmp in mmps]
     with open(src_file, "w") as w:
         for j in src:

@@ -37,7 +37,7 @@ To generate the predictions use the `translate.py` script:
 
 Model testing of beam search can be started by running the [testing_beam_search.sh](https://github.com/YuYaoYang2333/SyntaLinker/edit/master/testing_beam_search.sh) script.
 
-# Metrics
+## Metrics
 
 Run the the [recovery.sh](https://github.com/YuYaoYang2333/SyntaLinker/edit/master/recovery.sh) script to get the top-10 recovery.
 The other metrics, such as RMSD, 3D smiliarity in case study can be found in `Utils/` folder.

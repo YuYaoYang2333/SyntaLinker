@@ -4,10 +4,10 @@ Implementation of "Attention is All You Need"
 
 import torch.nn as nn
 
-import onmt
 from onmt.encoders.encoder import EncoderBase
-# from onmt.utils.misc import aeq
+from onmt.modules import MultiHeadedAttention
 from onmt.modules.position_ffn import PositionwiseFeedForward
+from onmt.utils.misc import sequence_mask
 
 
 class TransformerEncoderLayer(nn.Module):
@@ -23,39 +23,43 @@ class TransformerEncoderLayer(nn.Module):
         dropout (float): dropout probability(0-1.0).
     """
 
-    def __init__(self, d_model, heads, d_ff, dropout):
+    def __init__(self, d_model, heads, d_ff, dropout, attention_dropout,
+                 max_relative_positions=0):
         super(TransformerEncoderLayer, self).__init__()
 
-        self.self_attn = onmt.modules.MultiHeadedAttention(
-            heads, d_model, dropout=dropout)
+        self.self_attn = MultiHeadedAttention(
+            heads, d_model, dropout=attention_dropout,
+            max_relative_positions=max_relative_positions)
         self.feed_forward = PositionwiseFeedForward(d_model, d_ff, dropout)
-        self.layer_norm = onmt.modules.LayerNorm(d_model)
+        self.layer_norm = nn.LayerNorm(d_model, eps=1e-6)
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, inputs, mask):
         """
-        Transformer Encoder Layer definition.
-
         Args:
-            inputs (`FloatTensor`): `[batch_size x src_len x model_dim]`
-            mask (`LongTensor`): `[batch_size x src_len x src_len]`
+            inputs (FloatTensor): ``(batch_size, src_len, model_dim)``
+            mask (LongTensor): ``(batch_size, 1, src_len)``
 
         Returns:
-            (`FloatTensor`):
+            (FloatTensor):
 
-            * outputs `[batch_size x src_len x model_dim]`
+            * outputs ``(batch_size, src_len, model_dim)``
         """
         input_norm = self.layer_norm(inputs)
         context, _ = self.self_attn(input_norm, input_norm, input_norm,
-                                    mask=mask)
+                                    mask=mask, attn_type="self")
         out = self.dropout(context) + inputs
         return self.feed_forward(out)
 
+    def update_dropout(self, dropout, attention_dropout):
+        self.self_attn.update_dropout(attention_dropout)
+        self.feed_forward.update_dropout(dropout)
+        self.dropout.p = dropout
+
 
 class TransformerEncoder(EncoderBase):
-    """
-    The Transformer encoder from "Attention is All You Need".
-
+    """The Transformer encoder from "Attention is All You Need"
+    :cite:`DBLP:journals/corr/VaswaniSPUJGKP17`
 
     .. mermaid::
 
@@ -74,42 +78,58 @@ class TransformerEncoder(EncoderBase):
         heads (int): number of heads
         d_ff (int): size of the inner FF layer
         dropout (float): dropout parameters
-        embeddings (:obj:`onmt.modules.Embeddings`):
+        embeddings (onmt.modules.Embeddings):
           embeddings to use, should have positional encodings
 
     Returns:
-        (`FloatTensor`, `FloatTensor`):
+        (torch.FloatTensor, torch.FloatTensor):
 
-        * embeddings `[src_len x batch_size x model_dim]`
-        * memory_bank `[src_len x batch_size x model_dim]`
+        * embeddings ``(src_len, batch_size, model_dim)``
+        * memory_bank ``(src_len, batch_size, model_dim)``
     """
 
-    def __init__(self, num_layers, d_model, heads, d_ff,
-                 dropout, embeddings):
+    def __init__(self, num_layers, d_model, heads, d_ff, dropout,
+                 attention_dropout, embeddings, max_relative_positions):
         super(TransformerEncoder, self).__init__()
 
-        self.num_layers = num_layers
         self.embeddings = embeddings
         self.transformer = nn.ModuleList(
-            [TransformerEncoderLayer(d_model, heads, d_ff, dropout)
-             for _ in range(num_layers)])
-        self.layer_norm = onmt.modules.LayerNorm(d_model)
+            [TransformerEncoderLayer(
+                d_model, heads, d_ff, dropout, attention_dropout,
+                max_relative_positions=max_relative_positions)
+             for i in range(num_layers)])
+        self.layer_norm = nn.LayerNorm(d_model, eps=1e-6)
+
+    @classmethod
+    def from_opt(cls, opt, embeddings):
+        """Alternate constructor."""
+        return cls(
+            opt.enc_layers,
+            opt.enc_rnn_size,
+            opt.heads,
+            opt.transformer_ff,
+            opt.dropout[0] if type(opt.dropout) is list else opt.dropout,
+            opt.attention_dropout[0] if type(opt.attention_dropout)
+            is list else opt.attention_dropout,
+            embeddings,
+            opt.max_relative_positions)
 
     def forward(self, src, lengths=None):
-        """ See :obj:`EncoderBase.forward()`"""
+        """See :func:`EncoderBase.forward()`"""
         self._check_args(src, lengths)
 
         emb = self.embeddings(src)
 
         out = emb.transpose(0, 1).contiguous()
-        words = src[:, :, 0].transpose(0, 1)
-        w_batch, w_len = words.size()
-        padding_idx = self.embeddings.word_padding_idx
-        mask = words.data.eq(padding_idx).unsqueeze(1) \
-            .expand(w_batch, w_len, w_len)
+        mask = ~sequence_mask(lengths).unsqueeze(1)
         # Run the forward pass of every layer of the tranformer.
-        for i in range(self.num_layers):
-            out = self.transformer[i](out, mask)
+        for layer in self.transformer:
+            out = layer(out, mask)
         out = self.layer_norm(out)
 
         return emb, out.transpose(0, 1).contiguous(), lengths
+
+    def update_dropout(self, dropout, attention_dropout):
+        self.embeddings.update_dropout(dropout)
+        for layer in self.transformer:
+            layer.update_dropout(dropout, attention_dropout)

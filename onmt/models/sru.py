@@ -5,7 +5,7 @@ import subprocess
 import platform
 import os
 import re
-import argparse
+import configargparse
 import torch
 import torch.nn as nn
 from torch.autograd import Function
@@ -13,7 +13,7 @@ from collections import namedtuple
 
 
 # For command-line option parsing
-class CheckSRU(argparse.Action):
+class CheckSRU(configargparse.Action):
     def __init__(self, option_strings, dest, **kwargs):
         super(CheckSRU, self).__init__(option_strings, dest, **kwargs)
 
@@ -583,7 +583,6 @@ class SRU(nn.Module):
       bidirectional (bool): bidirectional
       use_tanh (bool): activation
       use_relu (bool): activation
-
     """
 
     def __init__(self, input_size, hidden_size,

@@ -1,6 +1,6 @@
 # SyntaLinker (Automatic Fragment Linking with Deep Conditional Transformer Neural Networks)
 
-This is the code for the "SyntaLinker: Automatic Fragment Linking with Deep Conditional Transformer Neural Networks" paper found on [ChemRxiv](https://ChemRxiv.org/).
+This is the code for the "SyntaLinker: Automatic Fragment Linking with Deep Conditional Transformer Neural Networks" paper found on [RSC Chemical Science](https://pubs.rsc.org/en/content/articlelanding/2020/sc/d0sc03126g).
 
 To implement our models we were based on [OpenNMT-py (v0.4.1)](http://opennmt.net/OpenNMT-py/).
 
@@ -45,7 +45,7 @@ The other metrics, such as RMSD, 3D smiliarity in case study can be found in `Ut
 ## Citation
 
 If you find this work useful in your research, please consider citing the paper:
-"SyntaLinker: Automatic Fragment Linking with Deep Conditional Transformer Neural Networks".
+"SyntaLinker: Automatic Fragment Linking with Deep Conditional Transformer Neural Networks, Chem. Sci., 2020,11, 8312-8322"
 
 
 
